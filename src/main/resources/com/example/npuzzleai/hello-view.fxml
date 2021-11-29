@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.npuzzleai.N_PuzzleController">
+   <children>
+      <Pane prefHeight="600.0" prefWidth="240.0">
+         <children>
+            <ImageView fx:id="imgView" fitHeight="180.0" fitWidth="180.0" layoutX="30.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true" />
+            <Button fx:id="jumbleBtn" layoutX="30.0" layoutY="329.0" mnemonicParsing="false" onAction="#onJumbleBtnClick" prefHeight="32.0" prefWidth="80.0" text="Jumble" />
+            <Button fx:id="solveBtn" layoutX="130.0" layoutY="329.0" mnemonicParsing="false" onAction="#onSolveBtnClick" prefHeight="32.0" prefWidth="80.0" text="Solve" />
+            <Button fx:id="addImage" layoutX="30.0" layoutY="277.0" mnemonicParsing="false" onAction="#onAddImgBtnClick" prefHeight="32.0" prefWidth="80.0" text="Add Image" />
+            <Button fx:id="addNumber" layoutX="130.0" layoutY="277.0" mnemonicParsing="false" onAction="#onAddNumberBtnClick" prefHeight="32.0" prefWidth="80.0" text="Number" />
+            <SplitMenuButton fx:id="sizeMenu" layoutX="130.0" layoutY="395.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="80.0" text="3x3">
+               <items>
+                  <RadioMenuItem fx:id="size3" mnemonicParsing="false" onAction="#onChangeImageSize" selected="true" text="3x3">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="sizeToggle" />
+                     </toggleGroup>
+                  </RadioMenuItem>
+                  <RadioMenuItem fx:id="size4" mnemonicParsing="false" onAction="#onChangeImageSize" text="4x4" toggleGroup="$sizeToggle" />
+                  <RadioMenuItem fx:id="size5" mnemonicParsing="false" onAction="#onChangeImageSize" text="5x5" toggleGroup="$sizeToggle" />
+               </items>
+            </SplitMenuButton>
+            <Label layoutX="62.0" layoutY="400.0" text="Size" />
+            <SplitMenuButton fx:id="algorithmMenu" layoutX="130.0" layoutY="454.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="80.0" text="A* H1">
+               <items>
+                  <RadioMenuItem fx:id="bfs" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="BFS">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="algorithmToggle" />
+                     </toggleGroup>
+                  </RadioMenuItem>
+                  <RadioMenuItem fx:id="heuristic1" mnemonicParsing="false" onAction="#onChangeAlgorithm" selected="true" text="A* H1" toggleGroup="$algorithmToggle" />
+                  <RadioMenuItem fx:id="heuristic2" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H2" toggleGroup="$algorithmToggle" />
+                  <RadioMenuItem fx:id="heuristic3" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H3" toggleGroup="$algorithmToggle" />
+                  <RadioMenuItem fx:id="heuristic4" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H4" toggleGroup="$algorithmToggle" />
+                  <RadioMenuItem fx:id="heuristic5" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H5" toggleGroup="$algorithmToggle" />
+               </items>
+            </SplitMenuButton>
+            <Label layoutX="45.0" layoutY="459.0" text="Algorithm" />
+            <Label layoutX="61.0" layoutY="516.0" text="Step" />
+            <TextField fx:id="stepField" alignment="CENTER_RIGHT" editable="false" layoutX="130.0" layoutY="511.0" prefHeight="28.0" prefWidth="80.0" text="0/0" />
+         </children>
+      </Pane>
+      <Pane layoutX="240.0" prefHeight="600.0" prefWidth="560.0">
+         <children>
+            <Canvas fx:id="imgCanvas" height="400.0" layoutX="80.0" layoutY="30.0" width="400.0" />
+            <ProgressBar fx:id="progressBar" layoutX="198.0" layoutY="494.0" prefHeight="20.0" prefWidth="165.0" progress="0.0" />
+         </children></Pane>
+   </children>
+</AnchorPane>
