@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.Objects;
 
 public class N_PuzzleApplication extends Application {
     @Override
@@ -14,7 +15,7 @@ public class N_PuzzleApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setResizable(false);
         stage.setTitle("N-puzzle");
-        stage.getIcons().add(new Image(N_PuzzleApplication.class.getResourceAsStream("img/logo.png")));
+        stage.getIcons().add(new Image(Objects.requireNonNull(N_PuzzleApplication.class.getResourceAsStream("img/logo.png"))));
         stage.setScene(scene);
         stage.show();
     }

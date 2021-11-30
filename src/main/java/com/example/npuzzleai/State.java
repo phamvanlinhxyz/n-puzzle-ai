@@ -5,8 +5,9 @@ import java.util.*;
 public class State {
     public static int heuristic = 0;
     public int[] value;
-    private int size = 3;
-    private int length;
+    //public boolean check = false;
+    private final int size;
+    private final int length;
     private int blank;
     private int count = 0;
     public State(int m) { //truyền vào kích thước của puzzle
@@ -32,7 +33,7 @@ public class State {
     public int[] createRandomArray() {
         Init();
         Random rand = new Random();
-        if (length < 4) {
+        /*if (size < 3) {
             int iRand;
             for (int i = 0; i < length; i++) {
                 while ((iRand = rand.nextInt(length)) == i) ;
@@ -42,29 +43,27 @@ public class State {
                     value[iRand] = tmp;
                 }
             }
-        } else {
-            int t = 65;
+        } else {*/
+            int t = 86;
             this.blank=0;
             count = 0;
             int a = 1, b = 0;
-            while(true) {
+            do {
                 switch (a) {
                     case 1 -> DOWN();
                     case 2 -> RIGHT();
                     case 3 -> LEFT();
                     case 4 -> UP();
                 }
-                while(true) {
+                while (true) {
                     b = rand.nextInt(4) + 1;
-                    if((a == 1 && b != 4) || (a == 4 && b != 1) || (a == 2 && b != 3) || (a == 3 && b != 2) )
-                    {
+                    if ((a == 1 && b != 4) || (a == 4 && b != 1) || (a == 2 && b != 3) || (a == 3 && b != 2)) {
                         a = b;
                         break;
                     }
                 }
-                if(count == t) break;
-            }
-        }
+            } while (count != t);
+        //}
         return value;
     }
     public int chooseHeuristic() {
@@ -85,6 +84,16 @@ public class State {
             }
         }
         return pos;
+    }
+    public boolean isGoal() {
+        boolean flag = true;
+        for (int i = 0; i < length; i++) {
+            if (value[i] != i) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
     }
     // Tổng số ô sai vị trí
     public int heuristic1() {

@@ -1,6 +1,5 @@
 package com.example.npuzzleai;
 
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -8,33 +7,30 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 public class HandleImage {
-    private int Size;
-    private int Length;
+    private final int Size;
+    private final int Length;
     protected int blank;
     protected int[] Value;
-    private Image bi;
-    private double w, h, cw, ch;  // kích thước thực của ảnh
-    private double width, height, cw1, ch1;  // kích thước mới: cw1, ch1 là chiều dài và rộng của 1 ô số
+    private final Image img;
+    private final double w;
+    private final double h;
+    private double cw;
+    private double ch;
+    private double width, height, cw1, ch1;
     private double align = 0;
-    private int type;
-    private Color ColorEbox;
-    private Color ColorBoxs;
     public boolean win = false;
-    public HandleImage(Image img, int size, int [] val, int t, Color Eb, Color b) {
-        this.bi = img;
-        this.type = t;
-        this.ColorEbox = Eb;
-        this.ColorBoxs = b;
+    public HandleImage(Image img, int size, int [] val) {
+        this.img = img;
         this.Size =size;
         Length = Size * Size;
         this.Value = val;
-        if(type == 0) {
+        if(img == null) {
             width = w = 400;
             height = h = 400;
         }
         else {
-            width = w = bi.getWidth();
-            height = h = bi.getHeight();
+            width = w = img.getWidth();
+            height = h = img.getHeight();
         }
         InitImage();
     }
@@ -67,45 +63,44 @@ public class HandleImage {
     }
     public void paint(GraphicsContext g) {
         // Tạo khung số
-        if(type == 0) {
-            g.setFill(ColorEbox);
+        if(img == null) {
+            g.setFill(Color.BLACK);
             g.fillRect(0, 0, width, height);
             for(int i = 0; i < Length; i++) {
                 double x = (i % Size) * cw1;
                 double y = (i / Size) * ch1;
                 if(Value[i] != 0) {
-                    g.setFill(ColorBoxs);
-                    g.fillRect(x + 0.5, y + 0.5, cw1 - 1, ch1 - 1);
                     g.setFill(Color.WHITE);
-                    g.setFont(Font.font("Roboto", FontWeight.BOLD, 80 / Size));
-                    g.fillText(Value[i]+"", x + cw1/2 - 3*Size/2, y + (2*ch1)/3 - 2*Size);
+                    g.fillRect(x + 0.5, y + 0.5, cw1 - 1, ch1 - 1);
+                    g.setFill(Color.BLACK);
+                    g.setFont(Font.font("Roboto", FontWeight.BOLD, 120 / Size));
+                    g.fillText(Value[i]+"", x + 5*cw1/12, y + (3*ch1)/5);
+                } else {
+                    g.setFill(Color.rgb(156, 127, 78));
+                    g.fillRect(x + 0.5, y + 0.5, cw1 - 1, ch1 - 1);
                 }
             }
         }
         // Tạo khung ảnh
-        else if(type == 1) {
+        else {
             g.clearRect(0, 0, 400, 400);
-            if(!win) {
-                g.setFill(ColorEbox);
+            if (!win) {
+                g.setFill(Color.GRAY);
                 g.fillRect(align, 0, width, height);
                 double dx, dy, sx, sy;
-                for(int i = 0; i < Length; i++) {
-                    if(Value[i] != 0) {
+                for (int i = 0; i < Length; i++) {
+                    if (Value[i] != 0) {
                         sx = (Value[i] % Size) * cw;
                         sy = (Value[i] / Size) * ch;
                         dx = (i % Size) * cw1;
                         dy = (i / Size) * ch1;
-                        g.drawImage(bi, sx, sy, cw, ch, dx + align + 0.5, dy + 0.5, cw1 - 1, ch1 - 1);
+                        g.drawImage(img, sx, sy, cw, ch, dx + align + 0.5, dy + 0.5, cw1 - 1, ch1 - 1);
                     }
                 }
-            }
-            else  //trạng thái lúc win
-            {
+            } else {
                 g.clearRect(0, 0, 400, 400);
-                g.drawImage(bi, 0, 0, width, height);
+                g.drawImage(img, 0, 0, width, height);
             }
-        } else if(type == 3) {
-            g.drawImage(bi, 0, 0, width, height);
         }
     }
 }

@@ -11,6 +11,7 @@ public class BFS {
     private final Queue<Node> FRINGE;
     private Vector<Node> CHILD;
     public Vector<Node> RESULT;
+    protected int approvedNodes;
     protected int totalNodes;
     protected long time;
 
@@ -26,8 +27,7 @@ public class BFS {
         FRINGE.add(startNode);
         try {
             while (!FRINGE.isEmpty()) {
-                currentNode = FRINGE.peek();
-                FRINGE.poll();
+                currentNode = FRINGE.poll();
                 if (System.currentTimeMillis() - startTime > 120000) {
                     FRINGE.clear();
                     return;
@@ -35,9 +35,10 @@ public class BFS {
                 if (currentNode.equals(endNode)) {
                     addResult(currentNode);
                     time = System.currentTimeMillis() - startTime;
+                    totalNodes = approvedNodes + FRINGE.size();
                     System.out.println("Thuật toán BFS");
-                    System.out.println("Số node đã duyệt: " + totalNodes);
-                    System.out.println("Tổng số node trên cây: " + (totalNodes + FRINGE.size()));
+                    System.out.println("Số node đã duyệt: " + approvedNodes);
+                    System.out.println("Tổng số node trên cây: " + totalNodes);
                     System.out.println("Tổng số bước: " + (RESULT.size() - 1));
                     System.out.println("Thời gian: " + time + " ms");
                     System.out.println("-------------------------");
@@ -58,13 +59,12 @@ public class BFS {
                     FRINGE.add(child);
                 }
                 CHILD.clear();
-                totalNodes++;
+                approvedNodes++;
             }
         } catch (OutOfMemoryError e) {
             FRINGE.clear();
             System.out.println("Tràn bộ nhớ!");
             System.err.println(e);
-            return;
         }
     }
     // Truy vết kết quả

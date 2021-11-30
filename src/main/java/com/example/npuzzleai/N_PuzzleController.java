@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.*;
 
 import javafx.scene.image.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -45,6 +45,8 @@ public class N_PuzzleController implements Initializable, Runnable {
     SplitMenuButton algorithmMenu;
     @FXML
     TextField stepField;
+    @FXML
+    AnchorPane displayPane;
 
     public AStar aStar;
     public BFS bFS;
@@ -54,6 +56,7 @@ public class N_PuzzleController implements Initializable, Runnable {
     private String algorithm = "A*";
     private State state = new State(size);
     private int[] value = state.createStartArray();
+    private Vector<Node> result;
     //private boolean isSolve = false;
 
     @Override
@@ -66,29 +69,16 @@ public class N_PuzzleController implements Initializable, Runnable {
     @Override
     public void run() {
         int step = 0;
-        if (algorithm == "BFS") {
-            for (Node node : bFS.RESULT) {
-                stepField.setText(step + "/" + (bFS.RESULT.size() - 1));
-                value = node.state.value;
-                displayImage(image);
-                step++;
-                try {
-                    Thread.sleep(800);
-                } catch (InterruptedException e) {
-                    System.out.println(e);
-                }
-            }
-        } else {
-            for (Node node : aStar.RESULT) {
-                stepField.setText(step + "/" + (aStar.RESULT.size() - 1));
-                value = node.state.value;
-                displayImage(image);
-                step++;
-                try {
-                    Thread.sleep(800);
-                } catch (InterruptedException e) {
-                    System.out.println(e);
-                }
+        for (Node node : result) {
+            stepField.setText(step + "/" + (result.size() - 1));
+            value = node.state.value;
+            state.value = value;
+            displayImage(image);
+            step++;
+            try {
+                Thread.sleep(800);
+            } catch (InterruptedException e) {
+                System.out.println(e);
             }
         }
     }
@@ -164,23 +154,24 @@ public class N_PuzzleController implements Initializable, Runnable {
     // Button trộn ảnh
     public void onJumbleBtnClick() {
         stepField.setText("0/0");
-        value = new int[] {5, 2, 1, 4, 8, 3, 7, 0, 6};
-        state.value = value;
+        value = state.createRandomArray();
         displayImage(image);
     }
     // Button tìm kết quả
     public void onSolveBtnClick() {
-        if (algorithm == "BFS") {
+        if (Objects.equals(algorithm, "BFS")) {
             bFS = new BFS();
             bFS.startNode = new Node(state, 0);
             State endState = new State(size);
             endState.Init();
             bFS.endNode = new Node(endState, 0);
             bFS.solve();
+            result = bFS.RESULT;
         } else {
             aStar = new AStar();
             aStar.startNode = new Node(state, 0);
             aStar.solve();
+            result = aStar.RESULT;
         }
         Thread test = new Thread(this);
         test.start();
@@ -207,9 +198,13 @@ public class N_PuzzleController implements Initializable, Runnable {
     // Hiển thị ra màn hình
     public void displayImage(Image img) {
         if (img == null) {
-            handledImage =  new HandleImage(img ,size, value, 0, Color.LIGHTBLUE, Color.GRAY);
+            displayPane.setStyle("-fx-background-radius: 20px; -fx-background-color: #703838");
         } else {
-            handledImage = new HandleImage(img, size, value, 1, Color.LIGHTBLUE, Color.GRAY);
+            displayPane.setStyle("");
+        }
+        handledImage = new HandleImage(img ,size, value);
+        if (state.isGoal()) {
+            handledImage.win = true;
         }
         GraphicsContext gc = imgCanvas.getGraphicsContext2D();
         handledImage.paint(gc);
