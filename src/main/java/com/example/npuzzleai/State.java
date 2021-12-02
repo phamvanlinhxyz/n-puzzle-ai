@@ -20,6 +20,7 @@ public class State {
         this.value = v;
         this.size = size;
         this.length = size * size;
+        this.blank = posBlank(this.value);
     }
     public void Init() {
         for (int i = 0; i < length; i++) {
@@ -45,7 +46,6 @@ public class State {
             }
         } else {*/
             int t = 86;
-            this.blank=0;
             count = 0;
             int a = 1, b = 0;
             do {
@@ -189,6 +189,7 @@ public class State {
         states.add(new State(newVal, size));
     }
     public void DOWN() {
+        blank = posBlank(value);
         int temp;
         if(blank < length - size) {
             temp = value[blank];
@@ -201,6 +202,7 @@ public class State {
     }
 
     public void UP() {
+        blank = posBlank(value);
         int temp;
         if(blank >= size) {
             temp = value[blank];
@@ -213,6 +215,7 @@ public class State {
     }
 
     public void RIGHT() {
+        blank = posBlank(value);
         int temp;
         if(blank % size != size-1) {
             temp = value[blank];
@@ -225,6 +228,7 @@ public class State {
     }
 
     public void LEFT() {
+        blank = posBlank(value);
         int temp;
         if(blank % size != 0 ) {
             temp = value[blank];

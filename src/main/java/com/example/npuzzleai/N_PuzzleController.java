@@ -3,13 +3,20 @@ package com.example.npuzzleai;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.*;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 
+import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
 
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.*;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -53,10 +60,11 @@ public class N_PuzzleController implements Initializable, Runnable {
     public Image image;
     public HandleImage handledImage;
     private int size = 3;
-    private String algorithm = "A*";
     private State state = new State(size);
     private int[] value = state.createStartArray();
     private Vector<Node> result;
+    private String algorithm = "A*";
+    private int countStep = 0;
     //private boolean isSolve = false;
 
     @Override
@@ -78,7 +86,7 @@ public class N_PuzzleController implements Initializable, Runnable {
             try {
                 Thread.sleep(800);
             } catch (InterruptedException e) {
-                System.out.println(e);
+                System.err.println(e);
             }
         }
     }
@@ -133,12 +141,14 @@ public class N_PuzzleController implements Initializable, Runnable {
         );
         File file = fileChooser.showOpenDialog(null);
         if (file != null) {
+            countStep = 0;
             image = new Image(file.toURI().toString());
             // Thêm ảnh nhỏ
             if (image.getHeight() > image.getWidth()) {
                 double width = image.getWidth() * 180 / image.getHeight();
                 imgView.setX((180 - width) / 2);
             }
+            stepField.setText("0");
             imgView.setImage(image);
             value = state.createStartArray();
             displayImage(image);
@@ -146,14 +156,17 @@ public class N_PuzzleController implements Initializable, Runnable {
     }
     // Button thêm bảng số
     public void onAddNumberBtnClick() {
+        countStep = 0;
         image = null;
+        stepField.setText("0");
         imgView.setImage(null);
         value = state.createStartArray();
         displayImage(image);
     }
     // Button trộn ảnh
     public void onJumbleBtnClick() {
-        stepField.setText("0/0");
+        stepField.setText("0");
+        countStep = 0;
         value = state.createRandomArray();
         displayImage(image);
     }
@@ -173,8 +186,9 @@ public class N_PuzzleController implements Initializable, Runnable {
             aStar.solve();
             result = aStar.RESULT;
         }
-        Thread test = new Thread(this);
-        test.start();
+        countStep = 0;
+        Thread runResult = new Thread(this);
+        runResult.start();
         /*if (!isSolve) {
             isSolve = true;
             solveBtn.setText("Stop");
@@ -194,6 +208,39 @@ public class N_PuzzleController implements Initializable, Runnable {
             addNumber.setDisable(false);
             progressBar.setProgress(0);
         }*/
+    }
+    public void onKeyPressed(KeyEvent ke) {
+        switch (ke.getCode()) {
+            case W -> state.UP();
+            case A -> state.LEFT();
+            case S -> state.DOWN();
+            case D -> state.RIGHT();
+        }
+        countStep++;
+        stepField.setText(String.valueOf(countStep));
+        displayImage(image);
+    }
+    public void onMouseClicked(MouseEvent me) {
+        int blank = state.posBlank(state.value);
+        int x = blank % size;
+        int y = blank / size;
+        int mx = (int) (me.getX() / imgCanvas.getWidth() * size);
+        int my = (int) (me.getY() / imgCanvas.getHeight() * size);
+        countStep++;
+        if (mx == x && my == y - 1) {
+            state.UP();
+        } else if (mx == x && my == y + 1) {
+            state.DOWN();
+        } else if (mx == x - 1 && my == y) {
+            state.LEFT();
+        } else if (mx == x + 1 && my == y) {
+            state.RIGHT();
+        } else {
+            Toolkit.getDefaultToolkit().beep();
+            countStep--;
+        }
+        stepField.setText(String.valueOf(countStep));
+        displayImage(image);
     }
     // Hiển thị ra màn hình
     public void displayImage(Image img) {
