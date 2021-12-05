@@ -74,7 +74,11 @@ public class HandleImage {
                     g.fillRect(x + 0.5, y + 0.5, cw1 - 1, ch1 - 1);
                     g.setFill(Color.BLACK);
                     g.setFont(Font.font("Roboto", FontWeight.BOLD, 120 / Size));
-                    g.fillText(Value[i]+"", x + 5*cw1/12, y + (3*ch1)/5);
+                    if (Value[i] < 10) {
+                        g.fillText(Value[i]+"", x + 5*cw1/12, y + (3*ch1)/5);
+                    } else {
+                        g.fillText(Value[i]+"", x + 1*cw1/3, y + (3*ch1)/5);
+                    }
                 } else {
                     g.setFill(Color.rgb(156, 127, 78));
                     g.fillRect(x + 0.5, y + 0.5, cw1 - 1, ch1 - 1);
@@ -95,11 +99,18 @@ public class HandleImage {
                         dx = (i % Size) * cw1;
                         dy = (i / Size) * ch1;
                         g.drawImage(img, sx, sy, cw, ch, dx + align + 0.5, dy + 0.5, cw1 - 1, ch1 - 1);
+                        g.setFill(Color.WHITE);
+                        g.setFont(Font.font("Roboto", FontWeight.MEDIUM, 90 / Size));
+                        if (Value[i] < 10) {
+                            g.fillText(Value[i]+"", dx + cw1 + align - 70/Size, dy + ch1 - 30/Size);
+                        } else {
+                            g.fillText(Value[i]+"", dx + cw1 + align - 120/Size, dy + ch1 - 30/Size);
+                        }
                     }
                 }
             } else {
                 g.clearRect(0, 0, 400, 400);
-                g.drawImage(img, 0, 0, width, height);
+                g.drawImage(img, align, 0, width, height);
             }
         }
     }

@@ -2,19 +2,19 @@ package com.example.npuzzleai;
 
 import java.util.Vector;
 
-public class Node {
+public class Nodes {
     public State state;
     public int f;
     public int g;
     public int h;
     public int cost;
-    public Node parent;
+    public Nodes parent;
 
-    public Node(State state, int cost) {
+    public Nodes(State state, int cost) {
         this.state = state;
         this.cost = cost;
     }
-    public boolean equals(Node n) {
+    public boolean equals(Nodes n) {
         boolean flag = true;
         int[] val = state.value;
         int[] newVal = n.state.value;
@@ -29,11 +29,11 @@ public class Node {
     public int estimate() {
         return state.chooseHeuristic();
     }
-    public Vector<Node> successors() {
-        Vector<Node> nodes = new Vector<>();
+    public Vector<Nodes> successors() {
+        Vector<Nodes> nodes = new Vector<>();
         Vector<State> states = state.successors();
         for (State value : states) {
-            nodes.add(new Node(value, 1));
+            nodes.add(new Nodes(value, 1));
         }
         return nodes;
     }

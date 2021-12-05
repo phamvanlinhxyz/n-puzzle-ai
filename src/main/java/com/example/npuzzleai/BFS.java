@@ -5,15 +5,17 @@ import java.util.Queue;
 import java.util.Vector;
 
 public class BFS {
-    public Node startNode;
-    public Node endNode;
-    public Node currentNode;
-    private final Queue<Node> FRINGE;
-    private Vector<Node> CHILD;
-    public Vector<Node> RESULT;
+    public Nodes startNode;
+    public Nodes endNode;
+    public Nodes currentNode;
+    private final Queue<Nodes> FRINGE;
+    private Vector<Nodes> CHILD;
+    public Vector<int[]> RESULT;
     protected int approvedNodes;
     protected int totalNodes;
     protected long time;
+    protected boolean stop = false;
+    protected String error;
 
     public BFS() {
         FRINGE = new LinkedList<>();
@@ -29,6 +31,11 @@ public class BFS {
             while (!FRINGE.isEmpty()) {
                 currentNode = FRINGE.poll();
                 if (System.currentTimeMillis() - startTime > 120000) {
+                    error = "Thuật toán quá tốn thời gian!";
+                    FRINGE.clear();
+                    return;
+                }
+                if (stop) {
                     FRINGE.clear();
                     return;
                 }
@@ -47,14 +54,14 @@ public class BFS {
                 }
                 CHILD = currentNode.successors();
                 if (currentNode.parent != null) {
-                    for (Node child : CHILD) {
+                    for (Nodes child : CHILD) {
                         if (child.equals(currentNode.parent)) {
                             CHILD.removeElement(child);
                             break;
                         }
                     }
                 }
-                for (Node child : CHILD) {
+                for (Nodes child : CHILD) {
                     child.parent = currentNode;
                     FRINGE.add(child);
                 }
@@ -63,15 +70,15 @@ public class BFS {
             }
         } catch (OutOfMemoryError e) {
             FRINGE.clear();
-            System.out.println("Tràn bộ nhớ!");
-            System.err.println(e);
+            error = "Tràn bộ nhớ!";
+            e.printStackTrace();
         }
     }
     // Truy vết kết quả
-    public void addResult(Node n) {
+    public void addResult(Nodes n) {
         if(n.parent!=null) {
             addResult(n.parent);
         }
-        RESULT.add(n);
+        RESULT.add(n.state.value);
     }
 }

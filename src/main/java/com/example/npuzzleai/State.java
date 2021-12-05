@@ -45,7 +45,7 @@ public class State {
                 }
             }
         } else {*/
-            int t = 86;
+            int t = 72;
             count = 0;
             int a = 1, b = 0;
             do {

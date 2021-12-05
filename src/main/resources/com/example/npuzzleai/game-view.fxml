@@ -49,8 +49,8 @@
             </SplitMenuButton>
             <Label layoutX="56.0" layoutY="425.0" text="Algorithm" />
             <Label layoutX="84.0" layoutY="477.0" text="Step" />
-            <TextField fx:id="stepField" alignment="CENTER_RIGHT" editable="false" layoutX="130.0" layoutY="472.0" prefHeight="28.0" prefWidth="80.0" text="0/0" />
-            <ProgressBar fx:id="progressBar" layoutX="38.0" layoutY="531.0" prefHeight="20.0" prefWidth="165.0" progress="0.0" />
+            <TextField fx:id="stepField" alignment="CENTER" cacheShape="false" centerShape="false" editable="false" focusTraversable="false" layoutX="130.0" layoutY="472.0" pickOnBounds="false" prefHeight="28.0" prefWidth="80.0" scaleShape="false" text="0" />
+            <ProgressBar fx:id="progressBar" layoutX="38.0" layoutY="531.0" prefHeight="20.0" prefWidth="165.0" />
          </children>
       </Pane>
       <Pane layoutX="240.0" prefHeight="600.0" prefWidth="560.0">

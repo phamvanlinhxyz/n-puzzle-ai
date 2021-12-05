@@ -3,15 +3,17 @@ package com.example.npuzzleai;
 import java.util.Vector;
 
 public class AStar {
-    public Node startNode;
-    public Node currentNode;
-    private final Vector<Node> FRINGE;
-    private Vector<Node> CHILD;
-    public Vector<Node> CLOSED;
-    public Vector<Node> RESULT;
+    public Nodes startNode;
+    public Nodes currentNode;
+    private final Vector<Nodes> FRINGE;
+    private Vector<Nodes> CHILD;
+    public Vector<Nodes> CLOSED;
+    public Vector<int[]> RESULT;
     protected int approvedNodes;
     protected int totalNodes;
     protected long time;
+    protected boolean stop = false;
+    protected String error;
 
     public AStar() {
         FRINGE = new Vector<>();
@@ -30,7 +32,13 @@ public class AStar {
         while (!FRINGE.isEmpty()) {
             // Điều kiện dừng thuật toán
             if (System.currentTimeMillis() - startTime > 180000) {
-                System.out.println("Thuật toán quá thời gian!");
+                error = "Thuật toán quá tốn thời gian!";
+                FRINGE.clear();
+                CHILD.clear();
+                CLOSED.clear();
+                return;
+            }
+            if (stop) {
                 FRINGE.clear();
                 CHILD.clear();
                 CLOSED.clear();
@@ -39,7 +47,7 @@ public class AStar {
             // Tìm node có hàm đánh giá - f(n) nhỏ nhất trong FRINGE
             int fMin = FRINGE.get(0).f;
             currentNode = FRINGE.get(0);
-            for (Node node : FRINGE) {
+            for (Nodes node : FRINGE) {
                 if (node.f < fMin) {
                     fMin = node.f;
                     currentNode = node;
@@ -67,13 +75,13 @@ public class AStar {
             CHILD = currentNode.successors();
             if (currentNode.parent != null) {
                 for (int i = 0; i < CHILD.size(); i++) {
-                    Node child = CHILD.get(i);
+                    Nodes child = CHILD.get(i);
                     if (child.equals(currentNode.parent)) {
                         CHILD.removeElement(child);
                         break;
                     }
                     // Kiểm tra trạng thái đã được duyệt chưa
-                    for (Node node : CLOSED) {
+                    for (Nodes node : CLOSED) {
                         if (node.equals(child)) {
                             CHILD.removeElement(child);
                             break;
@@ -82,13 +90,13 @@ public class AStar {
                 }
             }
             // Đưa các node con vào FRINGE
-            for (Node child : CHILD) {
+            for (Nodes child : CHILD) {
                 child.parent = currentNode;
                 child.g = currentNode.g + child.cost;
                 child.h = child.estimate();
                 child.f = child.g + child.h;
                 // Nếu trạng thái đã tồn tại trong FRINGE và hàm đánh giá tốt hơn => Thay thế
-                for (Node node : FRINGE) {
+                for (Nodes node : FRINGE) {
                     if (node.equals(child) && child.f < node.f) {
                         FRINGE.removeElement(node);
                         break;
@@ -101,10 +109,10 @@ public class AStar {
         }
     }
     // Truy vết kết quả
-    public void addResult(Node n) {
+    public void addResult(Nodes n) {
         if(n.parent!=null) {
             addResult(n.parent);
         }
-        RESULT.add(n);
+        RESULT.add(n.state.value);
     }
 }

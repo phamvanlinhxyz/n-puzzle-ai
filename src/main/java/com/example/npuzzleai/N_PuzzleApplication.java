@@ -11,7 +11,7 @@ import java.util.Objects;
 public class N_PuzzleApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(N_PuzzleApplication.class.getResource("hello-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(N_PuzzleApplication.class.getResource("game-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setResizable(false);
         stage.setTitle("N-puzzle");

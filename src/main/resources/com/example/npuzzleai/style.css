@@ -6,3 +6,6 @@
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
 }
+#close-btn {
+    -fx-background-color: #646464;
+}
