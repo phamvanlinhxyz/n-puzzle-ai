@@ -68,16 +68,16 @@ public class HandleImage {
             g.fillRect(0, 0, width, height);
             for(int i = 0; i < Length; i++) {
                 double x = (i % Size) * cw1;
-                double y = (i / Size) * ch1;
+                double y = (double) (i / Size) * ch1;
                 if(Value[i] != 0) {
                     g.setFill(Color.WHITE);
                     g.fillRect(x + 0.5, y + 0.5, cw1 - 1, ch1 - 1);
                     g.setFill(Color.BLACK);
-                    g.setFont(Font.font("Roboto", FontWeight.BOLD, 120 / Size));
+                    g.setFont(Font.font("Roboto", FontWeight.BOLD, (double) 120 / Size));
                     if (Value[i] < 10) {
-                        g.fillText(Value[i]+"", x + 5*cw1/12, y + (3*ch1)/5);
+                        g.fillText(String.valueOf(Value[i]), x + 5*cw1/12, y + (3*ch1)/5);
                     } else {
-                        g.fillText(Value[i]+"", x + 1*cw1/3, y + (3*ch1)/5);
+                        g.fillText(String.valueOf(Value[i]), x + 1*cw1/3, y + (3*ch1)/5);
                     }
                 } else {
                     g.setFill(Color.rgb(156, 127, 78));
@@ -94,17 +94,18 @@ public class HandleImage {
                 double dx, dy, sx, sy;
                 for (int i = 0; i < Length; i++) {
                     if (Value[i] != 0) {
-                        sx = (Value[i] % Size) * cw;
-                        sy = (Value[i] / Size) * ch;
+                        int c = Value[i] + 1 - State.goal;
+                        sx = (c % Size) * cw;
+                        sy = (double) (c / Size) * ch;
                         dx = (i % Size) * cw1;
-                        dy = (i / Size) * ch1;
+                        dy = (double) (i / Size) * ch1;
                         g.drawImage(img, sx, sy, cw, ch, dx + align + 0.5, dy + 0.5, cw1 - 1, ch1 - 1);
                         g.setFill(Color.WHITE);
-                        g.setFont(Font.font("Roboto", FontWeight.MEDIUM, 90 / Size));
+                        g.setFont(Font.font("Roboto", FontWeight.MEDIUM, (double) 90 / Size));
                         if (Value[i] < 10) {
-                            g.fillText(Value[i]+"", dx + cw1 + align - 70/Size, dy + ch1 - 30/Size);
+                            g.fillText(String.valueOf(Value[i]), dx + cw1 + align - (double) 70/Size, dy + ch1 - (double) 30/Size);
                         } else {
-                            g.fillText(Value[i]+"", dx + cw1 + align - 120/Size, dy + ch1 - 30/Size);
+                            g.fillText(String.valueOf(Value[i]), dx + cw1 + align - (double) 120/Size, dy + ch1 - (double) 30/Size);
                         }
                     }
                 }

@@ -3,7 +3,6 @@ package com.example.npuzzleai;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.canvas.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -25,47 +24,52 @@ import javafx.stage.Stage;
 
 public class N_PuzzleController implements Initializable, Runnable {
     @FXML
-    ToggleGroup sizeToggle;
+    private ToggleGroup difficultyToggle;
     @FXML
-    ToggleGroup algorithmToggle;
+    private ToggleGroup algorithmToggle;
     @FXML
-    RadioMenuItem size3;
+    private ToggleGroup goalToggle;
     @FXML
-    RadioMenuItem size4;
+    private Canvas imgCanvas;
     @FXML
-    RadioMenuItem size5;
+    private ImageView imgView;
     @FXML
-    Canvas imgCanvas;
+    private ImageView goal1Image;
     @FXML
-    ImageView imgView;
+    private ImageView goal2Image;
     @FXML
-    ProgressBar progressBar;
+    private ProgressBar progressBar;
     @FXML
-    Button solveBtn;
+    private Button solveBtn;
     @FXML
-    Button jumbleBtn;
+    private Button jumbleBtn;
     @FXML
-    Button addImage;
+    private Button addImage;
     @FXML
-    Button addNumber;
+    private Button addNumber;
     @FXML
-    SplitMenuButton sizeMenu;
+    private SplitMenuButton sizeMenu;
     @FXML
-    SplitMenuButton algorithmMenu;
+    private SplitMenuButton algorithmMenu;
     @FXML
-    TextField stepField;
+    private RadioButton goal1;
     @FXML
-    AnchorPane displayPane;
+    private RadioButton goal2;
+    @FXML
+    private TextField stepField;
+    @FXML
+    private AnchorPane displayPane;
 
     public AStar aStar;
     public BFS bFS;
     public Image image;
     public HandleImage handledImage;
-    private int size = 3;
-    private State state = new State(size);
-    private int[] value = state.createStartArray();
+    private int size;
+    private State state;
+    private State goalState;
+    private int[] value;
     private Vector<int[]> result;
-    private String algorithm = "A*";
+    private String algorithm;
     private int countStep = 0;
     private boolean isSolve = false;
     private int approvedNodes;
@@ -77,8 +81,17 @@ public class N_PuzzleController implements Initializable, Runnable {
     // Trạng thái khởi tạo ban đầu
     public void initialize(URL url, ResourceBundle resourceBundle) {
         State.heuristic = 1;
-        progressBar.setVisible(false);
+        State.goal = 1;
+        size = 3;
+        algorithm = "A*";
+        state = new State(size);
+        value = state.createGoalArray();
+        goalState = new State(size);
+        goalState.createGoalArray();
         displayImage(null);
+        progressBar.setVisible(false);
+        goal1Image.setImage(new Image(Objects.requireNonNull(N_PuzzleApplication.class.getResourceAsStream("img/goal-1.png"))));
+        goal2Image.setImage(new Image(Objects.requireNonNull(N_PuzzleApplication.class.getResourceAsStream("img/goal-2.png"))));
     }
     // Luồng chạy lời giải
     public void run() {
@@ -90,7 +103,7 @@ public class N_PuzzleController implements Initializable, Runnable {
             String step = i + "/" + totalStep;
             Platform.runLater(() -> stepField.setText(step));
             try {
-                Thread.sleep(400);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -101,15 +114,17 @@ public class N_PuzzleController implements Initializable, Runnable {
     @FXML
     // Chọn size bảng
     public void onChangeImageSize() {
-        RadioMenuItem selectedSize = (RadioMenuItem) sizeToggle.getSelectedToggle();
-        switch (selectedSize.getId()) {
-            case "size4" -> size = 4;
-            case "size5" -> size = 5;
+        RadioMenuItem selectedDiff = (RadioMenuItem) difficultyToggle.getSelectedToggle();
+        switch (selectedDiff.getId()) {
+            case "medium" -> size = 4;
+            case "hard" -> size = 5;
             default -> size = 3;
         }
-        sizeMenu.setText(selectedSize.getText());
+        sizeMenu.setText(selectedDiff.getText());
         state = new State(size);
-        value = state.createStartArray();
+        value = state.createGoalArray();
+        goalState = new State(size);
+        goalState.createGoalArray();
         displayImage(image);
     }
     // Chọn thuật toán
@@ -140,6 +155,18 @@ public class N_PuzzleController implements Initializable, Runnable {
         }
         algorithmMenu.setText(selectedAlgorithm.getText());
     }
+    // Thay đổi trạng thái đích
+    public void onChangeGoal() {
+        RadioButton selectedGoal = (RadioButton) goalToggle.getSelectedToggle();
+        if (Objects.equals(selectedGoal.getId(), "goal1")) {
+            State.goal = 1;
+        } else {
+            State.goal = 2;
+        }
+        value = state.createGoalArray();
+        goalState.createGoalArray();
+        displayImage(image);
+    }
     // Button thêm ảnh
     public void onAddImgBtnClick() {
         FileChooser fileChooser = new FileChooser();
@@ -148,7 +175,6 @@ public class N_PuzzleController implements Initializable, Runnable {
         );
         File file = fileChooser.showOpenDialog(null);
         if (file != null) {
-            countStep = 0;
             image = new Image(file.toURI().toString());
             // Thêm ảnh nhỏ
             if (image.getHeight() > image.getWidth()) {
@@ -157,9 +183,10 @@ public class N_PuzzleController implements Initializable, Runnable {
             } else {
                 imgView.setX(0);
             }
+            countStep = 0;
             stepField.setText("0");
             imgView.setImage(image);
-            value = state.createStartArray();
+            value = state.createGoalArray();
             displayImage(image);
         }
     }
@@ -169,7 +196,7 @@ public class N_PuzzleController implements Initializable, Runnable {
         image = null;
         stepField.setText("0");
         imgView.setImage(null);
-        value = state.createStartArray();
+        value = state.createGoalArray();
         displayImage(image);
     }
     // Button trộn ảnh
@@ -238,10 +265,8 @@ public class N_PuzzleController implements Initializable, Runnable {
         return new Thread(() -> {
             if (Objects.equals(algorithm, "BFS")) {
                 bFS = new BFS();
-                bFS.startNode = new Nodes(state, 0);
-                State endState = new State(size);
-                endState.Init();
-                bFS.endNode = new Nodes(endState, 0);
+                bFS.startNode = new Node(state, 0);
+                bFS.goalNode = new Node(goalState, 0);
                 bFS.solve();
                 result = bFS.RESULT;
                 approvedNodes = bFS.approvedNodes;
@@ -250,7 +275,8 @@ public class N_PuzzleController implements Initializable, Runnable {
                 error = bFS.error;
             } else {
                 aStar = new AStar();
-                aStar.startNode = new Nodes(state, 0);
+                aStar.startNode = new Node(state, 0);
+                aStar.goalNode = new Node(goalState, 1);
                 aStar.solve();
                 result = aStar.RESULT;
                 approvedNodes = aStar.approvedNodes;
@@ -282,6 +308,8 @@ public class N_PuzzleController implements Initializable, Runnable {
         sizeMenu.setDisable(true);
         algorithmMenu.setDisable(true);
         progressBar.setVisible(true);
+        goal1.setDisable(true);
+        goal2.setDisable(true);
     }
     // Trạng thái không tìm kiếm
     public void notSolve() {
@@ -294,6 +322,8 @@ public class N_PuzzleController implements Initializable, Runnable {
         sizeMenu.setDisable(false);
         algorithmMenu.setDisable(false);
         progressBar.setVisible(false);
+        goal1.setDisable(false);
+        goal2.setDisable(false);
     }
     // Bảng thông báo không tìm được lời giải
     public void showWarning() {
@@ -328,7 +358,7 @@ public class N_PuzzleController implements Initializable, Runnable {
         stage.getIcons().add(new Image(Objects.requireNonNull(N_PuzzleApplication.class.getResourceAsStream("img/logo.png"))));
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
-        Node closeBtn = alert.getDialogPane().lookupButton(closeTypeBtn);
+        javafx.scene.Node closeBtn = alert.getDialogPane().lookupButton(closeTypeBtn);
         closeBtn.setId("close-btn");
         // Show alert và đợi phản hồi
         alert.showAndWait().ifPresent(res -> {
@@ -349,7 +379,7 @@ public class N_PuzzleController implements Initializable, Runnable {
             displayPane.setStyle("");
         }
         handledImage = new HandleImage(img ,size, value);
-        if (state.isGoal()) {
+        if (state.isGoal(goalState)) {
             handledImage.win = true;
         }
         GraphicsContext gc = imgCanvas.getGraphicsContext2D();

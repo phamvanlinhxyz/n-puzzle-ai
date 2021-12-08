@@ -15,7 +15,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="N-Puzzle-AI" options="--add-exports jdk.internal.le/jdk.internal.org.jline.utils=com.example.npuzzleai" />
+      <module name="N-Puzzle-AI" options="" />
     </option>
   </component>
 </project>

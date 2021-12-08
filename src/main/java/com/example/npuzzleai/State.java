@@ -3,78 +3,69 @@ package com.example.npuzzleai;
 import java.util.*;
 
 public class State {
-    public static int heuristic = 0;
+    public static int heuristic;
+    public static int goal;
     public int[] value;
-    //public boolean check = false;
     private final int size;
     private final int length;
     private int blank;
-    private int count = 0;
-    public State(int m) { //truyền vào kích thước của puzzle
+    // Truyền vào kích thước của puzzle
+    public State(int m) {
         this.size = m;
         this.length = size * size;
         this.value= new int[length];
         this.blank = 0;
     }
-    public State(int[] v, int size) {//truyền vào trạng thái và kích thước của puzzle
+    // Truyền vào trạng thái và kích thước của puzzle
+    public State(int[] v, int size) {
         this.value = v;
         this.size = size;
         this.length = size * size;
         this.blank = posBlank(this.value);
     }
     public void Init() {
-        for (int i = 0; i < length; i++) {
-            value[i] = i;
+        if (goal == 1) {
+            for (int i = 0; i < length; i++) {
+                value[i] = i;
+            }
+        } else {
+            for (int i = 0; i < length - 1; i++) {
+                value[i] = i + 1;
+            }
+            value[length - 1] = 0;
         }
     }
-    public int[] createStartArray() {
+    // Tạo trang thái đích
+    public int[] createGoalArray() {
         Init();
         return value;
     }
+    // Tạo trạng thái ramdom
     public int[] createRandomArray() {
         Init();
         Random rand = new Random();
-        /*if (size < 3) {
-            int iRand;
-            for (int i = 0; i < length; i++) {
-                while ((iRand = rand.nextInt(length)) == i) ;
-                if (rand.nextInt(length) != i) {
-                    int tmp = value[i];
-                    value[i] = value[iRand];
-                    value[iRand] = tmp;
+        int t = 115;
+        int count = 0;
+        int a = 1, b;
+        do {
+            switch (a) {
+                case 1 -> UP();
+                case 2 -> RIGHT();
+                case 3 -> DOWN();
+                case 4 -> LEFT();
+            }
+            count++;
+            while (true) {
+                b = rand.nextInt(4) + 1;
+                if (Math.abs(b - a) != 2) {
+                    a = b;
+                    break;
                 }
             }
-        } else {*/
-            int t = 72;
-            count = 0;
-            int a = 1, b = 0;
-            do {
-                switch (a) {
-                    case 1 -> DOWN();
-                    case 2 -> RIGHT();
-                    case 3 -> LEFT();
-                    case 4 -> UP();
-                }
-                while (true) {
-                    b = rand.nextInt(4) + 1;
-                    if ((a == 1 && b != 4) || (a == 4 && b != 1) || (a == 2 && b != 3) || (a == 3 && b != 2)) {
-                        a = b;
-                        break;
-                    }
-                }
-            } while (count != t);
-        //}
+        } while (count != t);
         return value;
     }
-    public int chooseHeuristic() {
-        int est = 0;
-        if (heuristic == 1) est = heuristic1();
-        else if (heuristic == 2) est = heuristic2();
-        else if (heuristic == 3) est = heuristic3();
-        else if (heuristic == 4) est = heuristic4();
-        else if (heuristic == 5) est = heuristic5();
-        return est;
-    }
+    // Tìm vị trí trống
     public int posBlank(int[] val) {
         int pos = 0;
         for (int i = 0; i < val.length; i++) {
@@ -85,79 +76,100 @@ public class State {
         }
         return pos;
     }
-    public boolean isGoal() {
+    // Kiểm tra trạng thái có phải trạng thái đích không
+    public boolean isGoal(State goalState) {
+        int[] goalValue = goalState.value;
         boolean flag = true;
         for (int i = 0; i < length; i++) {
-            if (value[i] != i) {
+            if (value[i] != goalValue[i]) {
                 flag = false;
                 break;
             }
         }
         return flag;
     }
+    // Tính ước lượng h(x)
+    public int estimate(State goalState) {
+        int est = 0;
+        if (heuristic == 1) est = heuristic1(goalState);
+        else if (heuristic == 2) est = heuristic2(goalState);
+        else if (heuristic == 3) est = heuristic3(goalState);
+        else if (heuristic == 4) est = heuristic4(goalState);
+        else if (heuristic == 5) est = heuristic5(goalState);
+        return est;
+    }
     // Tổng số ô sai vị trí
-    public int heuristic1() {
+    public int heuristic1(State goalState) {
+        int[] goalValue = goalState.value;
         int distance = 0;
         for (int i = 0; i < length; i++) {
-            if(value[i] != 0 && value[i] != i) distance++;
+            if(value[i] != 0 && value[i] != goalValue[i]) distance++;
         }
         return distance;
     }
     // Tổng khoảng cách để đưa các ô về đúng vị trí
-    public int heuristic2() {
+    public int heuristic2(State goalState) {
+        int[] goalValue = goalState.value;
         int distance = 0;
         for (int i = 0; i < length; i++) {
-            int c = value[i];
-            if (c != 0) {
-                distance += Math.abs(c / size - i / size) + Math.abs(c % size - i % size);
+            if (value[i] != 0) {
+                int gi = Arrays.binarySearch(goalValue, value[i]);
+                distance += Math.abs(gi / size - i / size) + Math.abs(gi % size - i % size);
             }
         }
         return distance;
     }
     // Tổng khoảng cách Euclid của các ô với vị trí đích
-    public int heuristic3() {
+    public int heuristic3(State goalState) {
+        int[] goalValue = goalState.value;
         int distance = 0;
         for (int i = 0; i < length; i++) {
-            int c = value[i];
-            if (c != 0) {
-                int width = Math.abs(c % size - i % size);
-                int height = Math.abs(c / size - i / size);
+            if (value[i] != 0) {
+                int gi = Arrays.binarySearch(goalValue, value[i]);
+                int width = Math.abs(gi % size - i % size);
+                int height = Math.abs(gi / size - i / size);
                 distance += (int) Math.sqrt(width * width + height * height);
             }
         }
         return distance;
     }
     // Tổng số ô sai hàng và số ô sai cột
-    public int heuristic4() {
+    public int heuristic4(State goalState) {
+        int[] goalValue = goalState.value;
         int distance = 0;
         for (int i = 0; i < length; i++) {
-            int c = value[i];
-            if (c != 0) {
-                if ((c / size) != (i / size)) distance++;
-                if ((c % size) != (i % size)) distance++;
+            if (value[i] != 0) {
+                int gi = Arrays.binarySearch(goalValue, value[i]);
+                if ((gi / size) != (i / size)) distance++;
+                if ((gi % size) != (i % size)) distance++;
             }
         }
         return distance;
     }
     // Tổng khoảng cách để đưa các ô về đúng vị trí + số ô xung đột tuyến tính
-    public int heuristic5() {
+    public int heuristic5(State goalState) {
+        int[] goalValue = goalState.value;
         int distance = 0;
-        distance += heuristic2();
+        distance += heuristic2(goalState);
+        // Tính số xung đột tuyến tính trên hàng
         for (int i = 0; i < size; i++) {
             int max = -1;
             for (int j = 0; j < size; j++) {
                 int c = value[i * size + j];
-                if(c != 0 && c / size == i) {
+                int gi = Arrays.binarySearch(goalValue, c);
+                if(c != 0 && gi / size == i) {
                     if (c > max) max = c;
                     else distance += 2;
                 }
             }
         }
+        // Tính số xung đột tuyến tính trên cột
         for (int i = 0; i < size; i++) {
             int max = -1;
             for (int j = 0; j < size; j++) {
                 int c = value[i + j * size];
-                if (c != 0 && c % size == i) {
+                int gi = Arrays.binarySearch(goalValue, c);
+                if (c != 0 && gi % size == i) {
                     if (c > max) max = c;
                     else distance += 2;
                 }
@@ -165,6 +177,7 @@ public class State {
         }
         return distance;
     }
+    // Vector các trạng thái con
     public Vector<State> successors() {
         Vector<State> states = new Vector<>();
         int blank = posBlank(value);
@@ -182,25 +195,14 @@ public class State {
         }
         return states;
     }
+    // Add trạng thái con
     public void addSuccessor(int oldBlank, int newBlank, Vector<State> states, int[] oldVal) {
         int[] newVal = oldVal.clone();
         newVal[oldBlank] = newVal[newBlank];
         newVal[newBlank] = 0;
         states.add(new State(newVal, size));
     }
-    public void DOWN() {
-        blank = posBlank(value);
-        int temp;
-        if(blank < length - size) {
-            temp = value[blank];
-            value[blank] = value[blank + size];
-            value[blank + size] = temp;
-            blank += size;
-            count++;
-        }
-        else return;
-    }
-
+    // Di chuyển ô trống lên trên
     public void UP() {
         blank = posBlank(value);
         int temp;
@@ -209,11 +211,9 @@ public class State {
             value[blank] = value[blank - size];
             value[blank - size] = temp;
             blank -= size;
-            count++;
         }
-        else return;
     }
-
+    // Di chuyển ô trống sang phải
     public void RIGHT() {
         blank = posBlank(value);
         int temp;
@@ -222,11 +222,20 @@ public class State {
             value[blank] = value[blank + 1];
             value[blank + 1] = temp;
             blank += 1;
-            count++;
         }
-        else return;
     }
-
+    // Di chuyển ô trống xuống dưới
+    public void DOWN() {
+        blank = posBlank(value);
+        int temp;
+        if(blank < length - size) {
+            temp = value[blank];
+            value[blank] = value[blank + size];
+            value[blank + size] = temp;
+            blank += size;
+        }
+    }
+    // Di chuyển ô blank sang trái
     public void LEFT() {
         blank = posBlank(value);
         int temp;
@@ -235,8 +244,6 @@ public class State {
             value[blank] = value[blank - 1];
             value[blank - 1] = temp;
             blank -= 1;
-            count++;
         }
-        else return;
     }
 }

@@ -5,11 +5,11 @@ import java.util.Queue;
 import java.util.Vector;
 
 public class BFS {
-    public Nodes startNode;
-    public Nodes endNode;
-    public Nodes currentNode;
-    private final Queue<Nodes> FRINGE;
-    private Vector<Nodes> CHILD;
+    public Node startNode;
+    public Node goalNode;
+    public Node currentNode;
+    private final Queue<Node> FRINGE;
+    private Vector<Node> CHILD;
     public Vector<int[]> RESULT;
     protected int approvedNodes;
     protected int totalNodes;
@@ -39,7 +39,7 @@ public class BFS {
                     FRINGE.clear();
                     return;
                 }
-                if (currentNode.equals(endNode)) {
+                if (currentNode.equals(goalNode)) {
                     addResult(currentNode);
                     time = System.currentTimeMillis() - startTime;
                     totalNodes = approvedNodes + FRINGE.size();
@@ -54,14 +54,14 @@ public class BFS {
                 }
                 CHILD = currentNode.successors();
                 if (currentNode.parent != null) {
-                    for (Nodes child : CHILD) {
+                    for (Node child : CHILD) {
                         if (child.equals(currentNode.parent)) {
                             CHILD.removeElement(child);
                             break;
                         }
                     }
                 }
-                for (Nodes child : CHILD) {
+                for (Node child : CHILD) {
                     child.parent = currentNode;
                     FRINGE.add(child);
                 }
@@ -75,7 +75,7 @@ public class BFS {
         }
     }
     // Truy vết kết quả
-    public void addResult(Nodes n) {
+    public void addResult(Node n) {
         if(n.parent!=null) {
             addResult(n.parent);
         }
