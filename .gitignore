@@ -1,4 +1,4 @@
-.idea/
-.target/
-N-Puzzle-AI.iml
+.idea
+target
+.iml
 pom.xml
