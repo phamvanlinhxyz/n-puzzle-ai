@@ -3,6 +3,7 @@ package com.example.npuzzleai;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.canvas.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -18,6 +19,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -48,6 +51,8 @@ public class N_PuzzleController implements Initializable, Runnable {
     @FXML
     private Button addNumber;
     @FXML
+    private Button compareBtn;
+    @FXML
     private SplitMenuButton sizeMenu;
     @FXML
     private SplitMenuButton algorithmMenu;
@@ -76,6 +81,7 @@ public class N_PuzzleController implements Initializable, Runnable {
     private int totalNodes;
     private long solveTime;
     private String error;
+    private final Vector<Result> compareResults = new Vector<>();
 
     @Override
     // Trạng thái khởi tạo ban đầu
@@ -210,20 +216,33 @@ public class N_PuzzleController implements Initializable, Runnable {
     public void onSolveBtnClick() {
         countStep = 0;
         if (!isSolve) {
+            if(Objects.equals(algorithm, "BFS")) {
+                BFS.stop = false;
+            } else {
+                AStar.stop = false;
+            }
             solveThread().start();
             solving();
         } else {
             if(Objects.equals(algorithm, "BFS")) {
-                bFS.stop = true;
+                BFS.stop = true;
             } else {
-                aStar.stop = true;
+                AStar.stop = true;
             }
             notSolve();
         }
     }
+    // Button so sánh Heuristic
+    public void onCompareBtnClick() {
+        algorithm = "A*";
+        AStar.stop = false;
+        compareThread().start();
+    }
     // Sự kiện từ bàn phím
     public void onKeyPressed(KeyEvent ke) {
         if (!isSolve) {
+            countStep++;
+            int[] tmpValue = Arrays.copyOf(value, size * size);
             switch (ke.getCode()) {
                 case W -> state.UP();
                 case A -> state.LEFT();
@@ -231,7 +250,12 @@ public class N_PuzzleController implements Initializable, Runnable {
                 case D -> state.RIGHT();
                 default -> countStep--;
             }
-            countStep++;
+            if (Arrays.equals(tmpValue, value)) {
+                countStep--;
+            }
+            if (Arrays.equals(value, goalState.value)) {
+                countStep = 0;
+            }
             stepField.setText(String.valueOf(countStep));
             displayImage(image);
         }
@@ -256,33 +280,44 @@ public class N_PuzzleController implements Initializable, Runnable {
             } else {
                 countStep--;
             }
+            if (Arrays.equals(value, goalState.value)) {
+                countStep = 0;
+            }
             stepField.setText(String.valueOf(countStep));
             displayImage(image);
         }
+    }
+    // Giải quyết bài toán bằng thuật toán A*
+    public void solveAStar() {
+        aStar = new AStar();
+        aStar.startNode = new Node(state, 0);
+        aStar.goalNode = new Node(goalState, 1);
+        aStar.solve();
+        result = aStar.RESULT;
+        approvedNodes = aStar.approvedNodes;
+        totalNodes = aStar.totalNodes;
+        solveTime = aStar.time;
+        error = aStar.error;
+    }
+    // Giải quyết bài toán bằng thuật toán BFS
+    public void solveBFS() {
+        bFS = new BFS();
+        bFS.startNode = new Node(state, 0);
+        bFS.goalNode = new Node(goalState, 0);
+        bFS.solve();
+        result = bFS.RESULT;
+        approvedNodes = bFS.approvedNodes;
+        totalNodes = bFS.totalNodes;
+        solveTime = bFS.time;
+        error = bFS.error;
     }
     // Luồng tìm kiếm lời giải
     public Thread solveThread() {
         return new Thread(() -> {
             if (Objects.equals(algorithm, "BFS")) {
-                bFS = new BFS();
-                bFS.startNode = new Node(state, 0);
-                bFS.goalNode = new Node(goalState, 0);
-                bFS.solve();
-                result = bFS.RESULT;
-                approvedNodes = bFS.approvedNodes;
-                totalNodes = bFS.totalNodes;
-                solveTime = bFS.time;
-                error = bFS.error;
+                solveBFS();
             } else {
-                aStar = new AStar();
-                aStar.startNode = new Node(state, 0);
-                aStar.goalNode = new Node(goalState, 1);
-                aStar.solve();
-                result = aStar.RESULT;
-                approvedNodes = aStar.approvedNodes;
-                totalNodes = aStar.totalNodes;
-                solveTime = aStar.time;
-                error = aStar.error;
+                solveAStar();
             }
             // Nếu tìm được lời giải
             if (result.size() > 1) {
@@ -298,13 +333,39 @@ public class N_PuzzleController implements Initializable, Runnable {
             }
         });
     }
+    // Luồng so sánh Heuristic
+    public Thread compareThread() {
+        return new Thread(() -> {
+            algorithm = "A*";
+            int tmp = State.heuristic;
+            goalState.createGoalArray();
+            if (!Arrays.equals(value, goalState.value)) {
+                Platform.runLater(this::solving);
+                // Giải bài toán bằng lần lượt các Heuristic
+                for (int i = 1; i <= 5; i++) {
+                    State.heuristic = i;
+                    solveAStar();
+                    Result result = new Result("H" + i, approvedNodes, totalNodes, solveTime, error);
+                    compareResults.add(result); // Lưu kết quả
+                }
+                // Nếu dừng so sánh
+                if (AStar.stop) {
+                    compareResults.clear();
+                } else {
+                    Platform.runLater(this::showCompare); // Show bảng so sánh
+                }
+            }
+            State.heuristic = tmp;
+        });
+    }
     // Trạng thái đang tìm kiếm
     public void solving() {
         isSolve = true;
-        solveBtn.setText("Stop");
+        solveBtn.setText("Dừng");
         jumbleBtn.setDisable(true);
         addImage.setDisable(true);
         addNumber.setDisable(true);
+        compareBtn.setDisable(true);
         sizeMenu.setDisable(true);
         algorithmMenu.setDisable(true);
         progressBar.setVisible(true);
@@ -314,11 +375,12 @@ public class N_PuzzleController implements Initializable, Runnable {
     // Trạng thái không tìm kiếm
     public void notSolve() {
         isSolve = false;
-        solveBtn.setText("Solve");
+        solveBtn.setText("Giải");
         solveBtn.setDisable(false);
         jumbleBtn.setDisable(false);
         addImage.setDisable(false);
         addNumber.setDisable(false);
+        compareBtn.setDisable(false);
         sizeMenu.setDisable(false);
         algorithmMenu.setDisable(false);
         progressBar.setVisible(false);
@@ -328,9 +390,9 @@ public class N_PuzzleController implements Initializable, Runnable {
     // Bảng thông báo không tìm được lời giải
     public void showWarning() {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        ButtonType closeTypeBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType closeTypeBtn = new ButtonType("Đóng", ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(closeTypeBtn);
-        alert.setTitle("Notification");
+        alert.setTitle("Thông báo");
         alert.setHeaderText("Không tìm được lời giải!");
         alert.setContentText("Nguyên nhân: \n" + error);
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -342,25 +404,21 @@ public class N_PuzzleController implements Initializable, Runnable {
     // Bảng thông báo kết quả tìm kiếm
     public void showAlert() {
         Alert alert = new Alert(Alert.AlertType.NONE);
-        ButtonType runTypeBtn = new ButtonType("Run", ButtonBar.ButtonData.OK_DONE);
-        ButtonType closeTypeBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-        alert.setTitle("Notification");
+        ButtonType runTypeBtn = new ButtonType("Chạy", ButtonBar.ButtonData.OK_DONE);
+        ButtonType closeTypeBtn = new ButtonType("Đóng", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.setTitle("Thông báo");
         alert.getButtonTypes().setAll(runTypeBtn, closeTypeBtn);
         alert.setHeaderText("Lời giải: ");
+        // Kết quả tìm kiếm được
         alert.setContentText("Thuật toán sử dụng: " + (Objects.equals(algorithm, "BFS") ? "BFS" : "A* với Heuristic " + State.heuristic)  + "\n"
             + "Số node đã duyệt: " + approvedNodes + "\n"
             + "Tổng số node trên cây: " + totalNodes + "\n"
             + "Tổng số bước: " + (result.size() - 1) + "\n"
-            + "Thời gian tìm kiếm: " + solveTime + " ms" + "\n"
+            + "Thời gian tìm kiếm: " + solveTime + "ms" + "\n"
             + "Bạn có muốn chạy lời giải?"
         );
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(Objects.requireNonNull(N_PuzzleApplication.class.getResourceAsStream("img/logo.png"))));
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
-        javafx.scene.Node closeBtn = alert.getDialogPane().lookupButton(closeTypeBtn);
-        closeBtn.setId("close-btn");
-        // Show alert và đợi phản hồi
+        alertStyle(alert, closeTypeBtn);
+        // Hiển thị kết quả và đợi phải hồi
         alert.showAndWait().ifPresent(res -> {
             if (res == runTypeBtn) {
                 solveBtn.setDisable(true);
@@ -370,6 +428,73 @@ public class N_PuzzleController implements Initializable, Runnable {
                 notSolve();
             }
         });
+    }
+    // Hiển thị bảng so sánh Heuristic
+    public void showCompare() {
+        Alert compare = new Alert(Alert.AlertType.CONFIRMATION);
+        ButtonType runTypeBtn = new ButtonType("Chạy", ButtonBar.ButtonData.OK_DONE);
+        ButtonType closeTypeBtn = new ButtonType("Đóng", ButtonBar.ButtonData.CANCEL_CLOSE);
+        compare.setTitle("Thông báo");
+        compare.setHeaderText("So Sánh: ");
+        // Hiển thị kết quả
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(15);
+        GridPane gridPane = new GridPane();
+        gridPane.setVgap(10);
+        gridPane.setHgap(10);
+        // Hiển thị kết quả của từng Heuristic
+        for (int i = 0; i < compareResults.size(); i++) {
+            Result rs = compareResults.get(i);
+            Label rsLabel = new Label(rs.showResult());
+            GridPane.setConstraints(rsLabel, i % 3, i / 3);
+            gridPane.getChildren().add(rsLabel);
+        }
+        // Sắp xếp và hiển thị kết quả so sánh
+        compareResults.sort(Comparator.comparingInt(o -> o.approved));
+        Collections.reverse(compareResults);
+        Label cpLabel = new Label("Kết luận : ");
+        boolean flag = false;
+        for (Result rs : compareResults) {
+            if (rs.error == null) {
+                cpLabel.setText(cpLabel.getText() + rs.heuristic + (rs == compareResults.lastElement() ? " " : " < "));
+                flag = true;
+            }
+        }
+        // Flag kiểm tra xem có tìm được kết quả hay không
+        if (flag) {
+            cpLabel.setText(cpLabel.getText() + ". Bạn có muốn chạy lời giải?");
+            compare.getButtonTypes().setAll(runTypeBtn, closeTypeBtn);
+        } else {
+            cpLabel.setText(cpLabel.getText() + "Không tìm được lời giải!");
+            compare.getButtonTypes().setAll(closeTypeBtn);
+        }
+        alertStyle(compare, closeTypeBtn);
+        vBox.getChildren().addAll(gridPane, cpLabel);
+        compare.getDialogPane().setContent(vBox);
+        // Chờ phải hồi
+        compare.showAndWait().ifPresent(res -> {
+            if (res == runTypeBtn) {
+                solveBtn.setDisable(true);
+                Thread runResult = new Thread(this);
+                runResult.start();
+            } else {
+                notSolve();
+            }
+        });
+        // Clear vector kết quả
+        compareResults.clear();
+    }
+    // Thêm icon và style cho bảng lời giải và bảng so sánh
+    public void alertStyle(Alert alert, ButtonType closeTypeBtn) {
+        // Thêm icon
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(Objects.requireNonNull(N_PuzzleApplication.class.getResourceAsStream("img/logo.png"))));
+        DialogPane dialogPane = alert.getDialogPane();
+        // Thêm css
+        dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+        javafx.scene.Node closeBtn = alert.getDialogPane().lookupButton(closeTypeBtn);
+        closeBtn.setId("close-btn");
     }
     // Hiển thị ra màn hình
     public void displayImage(Image img) {

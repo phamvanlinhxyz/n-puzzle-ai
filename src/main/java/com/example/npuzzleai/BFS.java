@@ -14,7 +14,7 @@ public class BFS {
     protected int approvedNodes;
     protected int totalNodes;
     protected long time;
-    protected boolean stop = false;
+    protected static boolean stop = false;
     protected String error;
 
     public BFS() {
@@ -43,12 +43,6 @@ public class BFS {
                     addResult(currentNode);
                     time = System.currentTimeMillis() - startTime;
                     totalNodes = approvedNodes + FRINGE.size();
-                    System.out.println("Thuật toán BFS");
-                    System.out.println("Số node đã duyệt: " + approvedNodes);
-                    System.out.println("Tổng số node trên cây: " + totalNodes);
-                    System.out.println("Tổng số bước: " + (RESULT.size() - 1));
-                    System.out.println("Thời gian: " + time + " ms");
-                    System.out.println("-------------------------");
                     FRINGE.clear();
                     return;
                 }

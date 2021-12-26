@@ -15,90 +15,66 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            onKeyPressed="#onKeyPressed" prefHeight="640.0" prefWidth="840.0" stylesheets="@style.css"
-            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.npuzzleai.N_PuzzleController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onKeyPressed" prefHeight="640.0" prefWidth="840.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.npuzzleai.N_PuzzleController">
    <Pane prefHeight="640.0" prefWidth="280.0">
-      <ImageView fx:id="imgView" fitHeight="200.0" fitWidth="200.0" layoutX="40.0" layoutY="45.0" pickOnBounds="true"
-                 preserveRatio="true"/>
-      <Button fx:id="jumbleBtn" layoutX="40.0" layoutY="330.0" mnemonicParsing="false" onAction="#onJumbleBtnClick"
-              prefHeight="32.0" prefWidth="84.0" text="Jumble"/>
-      <Button fx:id="solveBtn" layoutX="156.0" layoutY="330.0" mnemonicParsing="false" onAction="#onSolveBtnClick"
-              prefHeight="32.0" prefWidth="84.0" text="Solve"/>
-      <Button fx:id="addImage" layoutX="40.0" layoutY="280.0" mnemonicParsing="false" onAction="#onAddImgBtnClick"
-              prefHeight="32.0" prefWidth="84.0" text="Add Image"/>
-      <Button fx:id="addNumber" layoutX="156.0" layoutY="280.0" mnemonicParsing="false"
-              onAction="#onAddNumberBtnClick" prefHeight="32.0" prefWidth="84.0" text="Number"/>
-      <SplitMenuButton fx:id="sizeMenu" layoutX="156.0" layoutY="380.0" mnemonicParsing="false" prefHeight="30.0"
-                       prefWidth="84.0" text="Easy">
+      <ImageView fx:id="imgView" fitHeight="200.0" fitWidth="200.0" layoutX="40.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" />
+      <Button fx:id="jumbleBtn" layoutX="40.0" layoutY="330.0" mnemonicParsing="false" onAction="#onJumbleBtnClick" prefHeight="32.0" prefWidth="84.0" text="Trộn" />
+      <Button fx:id="solveBtn" layoutX="156.0" layoutY="330.0" mnemonicParsing="false" onAction="#onSolveBtnClick" prefHeight="32.0" prefWidth="84.0" text="Giải" />
+      <Button fx:id="addImage" layoutX="40.0" layoutY="280.0" mnemonicParsing="false" onAction="#onAddImgBtnClick" prefHeight="32.0" prefWidth="84.0" text="Thêm ảnh" />
+      <Button fx:id="addNumber" layoutX="156.0" layoutY="280.0" mnemonicParsing="false" onAction="#onAddNumberBtnClick" prefHeight="32.0" prefWidth="84.0" text="Bảng số" />
+      <SplitMenuButton fx:id="sizeMenu" layoutX="156.0" layoutY="380.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="84.0" text="Dễ">
          <items>
-            <RadioMenuItem fx:id="easy" mnemonicParsing="false" onAction="#onChangeImageSize" selected="true"
-                           text="Easy">
+            <RadioMenuItem fx:id="easy" mnemonicParsing="false" onAction="#onChangeImageSize" selected="true" text="Dễ">
                <toggleGroup>
-                  <ToggleGroup fx:id="difficultyToggle"/>
+                  <ToggleGroup fx:id="difficultyToggle" />
                </toggleGroup>
             </RadioMenuItem>
-            <RadioMenuItem fx:id="medium" mnemonicParsing="false" onAction="#onChangeImageSize" text="Medium"
-                           toggleGroup="$difficultyToggle"/>
-            <RadioMenuItem fx:id="hard" mnemonicParsing="false" onAction="#onChangeImageSize" text="Hard"
-                           toggleGroup="$difficultyToggle"/>
+            <RadioMenuItem fx:id="medium" mnemonicParsing="false" onAction="#onChangeImageSize" text="T.Bình" toggleGroup="$difficultyToggle" />
+            <RadioMenuItem fx:id="hard" mnemonicParsing="false" onAction="#onChangeImageSize" text="Khó" toggleGroup="$difficultyToggle" />
          </items>
       </SplitMenuButton>
-      <Label layoutX="74.0" layoutY="387.0" text="Difficulty"/>
-      <SplitMenuButton fx:id="algorithmMenu" layoutX="156.0" layoutY="430.0" mnemonicParsing="false"
-                       prefHeight="30.0" prefWidth="84.0" text="A* H1">
+      <Label layoutX="85.0" layoutY="387.0" text="Độ khó" />
+      <SplitMenuButton fx:id="algorithmMenu" layoutX="156.0" layoutY="430.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="84.0" text="A* H1">
          <items>
             <RadioMenuItem fx:id="bfs" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="BFS">
                <toggleGroup>
-                  <ToggleGroup fx:id="algorithmToggle"/>
+                  <ToggleGroup fx:id="algorithmToggle" />
                </toggleGroup>
             </RadioMenuItem>
-            <RadioMenuItem fx:id="heuristic1" mnemonicParsing="false" onAction="#onChangeAlgorithm" selected="true"
-                           text="A* H1" toggleGroup="$algorithmToggle"/>
-            <RadioMenuItem fx:id="heuristic2" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H2"
-                           toggleGroup="$algorithmToggle"/>
-            <RadioMenuItem fx:id="heuristic3" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H3"
-                           toggleGroup="$algorithmToggle"/>
-            <RadioMenuItem fx:id="heuristic4" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H4"
-                           toggleGroup="$algorithmToggle"/>
-            <RadioMenuItem fx:id="heuristic5" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H5"
-                           toggleGroup="$algorithmToggle"/>
+            <RadioMenuItem fx:id="heuristic1" mnemonicParsing="false" onAction="#onChangeAlgorithm" selected="true" text="A* H1" toggleGroup="$algorithmToggle" />
+            <RadioMenuItem fx:id="heuristic2" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H2" toggleGroup="$algorithmToggle" />
+            <RadioMenuItem fx:id="heuristic3" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H3" toggleGroup="$algorithmToggle" />
+            <RadioMenuItem fx:id="heuristic4" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H4" toggleGroup="$algorithmToggle" />
+            <RadioMenuItem fx:id="heuristic5" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H5" toggleGroup="$algorithmToggle" />
          </items>
       </SplitMenuButton>
-      <Label layoutX="70.0" layoutY="437.0" text="Algorithm"/>
-      <Label layoutX="97.0" layoutY="487.0" text="Step"/>
-      <TextField fx:id="stepField" alignment="CENTER" cacheShape="false" centerShape="false" editable="false"
-                 focusTraversable="false" layoutX="156.0" layoutY="480.0" pickOnBounds="false" prefHeight="30.0"
-                 prefWidth="84.0" scaleShape="false" text="0"/>
-      <ProgressBar fx:id="progressBar" layoutX="58.0" layoutY="549.0" prefHeight="20.0" prefWidth="165.0"/>
-      <Separator layoutX="280.0" orientation="VERTICAL" prefHeight="640.0"/>
+      <Label layoutX="68.0" layoutY="437.0" text="Thuật toán" />
+      <Label layoutX="97.0" layoutY="487.0" text="Bước" />
+      <TextField fx:id="stepField" alignment="CENTER" cacheShape="false" centerShape="false" editable="false" focusTraversable="false" layoutX="156.0" layoutY="480.0" pickOnBounds="false" prefHeight="30.0" prefWidth="84.0" scaleShape="false" text="0" />
+      <ProgressBar fx:id="progressBar" layoutX="57.0" layoutY="595.0" prefHeight="20.0" prefWidth="165.0" />
+      <Separator layoutX="280.0" orientation="VERTICAL" prefHeight="640.0" />
+      <Button fx:id="compareBtn" layoutX="86.0" layoutY="538.0" mnemonicParsing="false" onAction="#onCompareBtnClick" prefHeight="32.0" text="So sánh Heuristic" />
    </Pane>
    <Pane layoutX="280.0" prefHeight="640.0" prefWidth="560.0">
       <AnchorPane fx:id="displayPane" layoutX="55.0" layoutY="20.0" prefHeight="450.0" prefWidth="450.0">
-         <Canvas fx:id="imgCanvas" height="400.0" layoutX="25.0" layoutY="25.0" onMouseClicked="#onMouseClicked"
-                 width="400.0"/>
+         <Canvas fx:id="imgCanvas" height="400.0" layoutX="25.0" layoutY="25.0" onMouseClicked="#onMouseClicked" width="400.0" />
       </AnchorPane>
-      <RadioButton fx:id="goal1" layoutX="146.0" layoutY="497.0" mnemonicParsing="false" onAction="#onChangeGoal"
-                   prefHeight="18.0" prefWidth="84.0" selected="true" text=" ">
+      <RadioButton fx:id="goal1" layoutX="146.0" layoutY="497.0" mnemonicParsing="false" onAction="#onChangeGoal" prefHeight="18.0" prefWidth="84.0" selected="true" text=" ">
          <toggleGroup>
-            <ToggleGroup fx:id="goalToggle"/>
+            <ToggleGroup fx:id="goalToggle" />
          </toggleGroup>
          <graphic>
-            <ImageView fx:id="goal1Image" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true"
-                       preserveRatio="true"/>
+            <ImageView fx:id="goal1Image" fitHeight="120.0" fitWidth="120.0" preserveRatio="true" />
          </graphic>
       </RadioButton>
-      <RadioButton fx:id="goal2" layoutX="323.0" layoutY="497.0" mnemonicParsing="false" onAction="#onChangeGoal"
-                   text=" " toggleGroup="$goalToggle">
+      <RadioButton fx:id="goal2" layoutX="323.0" layoutY="497.0" mnemonicParsing="false" onAction="#onChangeGoal" text=" " toggleGroup="$goalToggle">
          <graphic>
-            <ImageView fx:id="goal2Image" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true"
-                       preserveRatio="true"/>
+            <ImageView fx:id="goal2Image" fitHeight="120.0" fitWidth="120.0" preserveRatio="true" />
          </graphic>
       </RadioButton>
-      <Label layoutX="94.0" layoutY="545.0" text="Goal">
+      <Label layoutX="94.0" layoutY="545.0" text="Đích">
          <font>
-            <Font name="System Bold" size="16.0"/>
+            <Font name="System Bold" size="16.0" />
          </font>
       </Label>
    </Pane>

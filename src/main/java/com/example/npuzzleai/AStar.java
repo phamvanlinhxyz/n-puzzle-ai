@@ -13,7 +13,7 @@ public class AStar {
     protected int approvedNodes;
     protected int totalNodes;
     protected long time;
-    protected boolean stop = false;
+    protected static boolean stop = false;
     protected String error;
 
     public AStar() {
@@ -34,6 +34,7 @@ public class AStar {
             // Điều kiện dừng thuật toán
             if (System.currentTimeMillis() - startTime > 180000) {
                 error = "Thuật toán quá tốn thời gian!";
+                approvedNodes = Integer.MAX_VALUE;
                 FRINGE.clear();
                 CHILD.clear();
                 CLOSED.clear();
@@ -61,12 +62,6 @@ public class AStar {
                 totalNodes = approvedNodes + FRINGE.size();
                 time = System.currentTimeMillis() - startTime;
                 addResult(currentNode); // Thêm kết quả vào RESULT
-                System.out.println("Thuật toán A* với Heuristic " + State.heuristic);
-                System.out.println("Số nút đã duyệt: " + approvedNodes);
-                System.out.println("Tổng số nút trên cây: " + totalNodes);
-                System.out.println("Tổng số bước: " + (RESULT.size() - 1));
-                System.out.println("Thời gian: " + time + " ms");
-                System.out.println("-------------------------");
                 FRINGE.clear();
                 CHILD.clear();
                 CLOSED.clear();
