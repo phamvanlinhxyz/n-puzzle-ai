@@ -44,7 +44,7 @@ public class State {
     public int[] createRandomArray() {
         Init();
         Random rand = new Random();
-        int t = 115;
+        int t = 30 * size;
         int count = 0;
         int a = 1, b;
         do {
@@ -96,9 +96,10 @@ public class State {
         else if (heuristic == 3) est = heuristic3(goalState);
         else if (heuristic == 4) est = heuristic4(goalState);
         else if (heuristic == 5) est = heuristic5(goalState);
+        else if (heuristic == 6) est = heuristic6(goalState);
         return est;
     }
-    // Tổng số ô sai vị trí
+    // Heuristic 1 - Tổng số ô sai vị trí
     public int heuristic1(State goalState) {
         int[] goalValue = goalState.value;
         int distance = 0;
@@ -107,7 +108,7 @@ public class State {
         }
         return distance;
     }
-    // Tổng khoảng cách để đưa các ô về đúng vị trí
+    // Heuristic 2 - Tổng khoảng cách để đưa các ô về đúng vị trí
     public int heuristic2(State goalState) {
         int[] goalValue = goalState.value;
         int distance = 0;
@@ -119,7 +120,7 @@ public class State {
         }
         return distance;
     }
-    // Tổng khoảng cách Euclid của các ô với vị trí đích
+    // Heuristic 3 - Tổng khoảng cách Euclid của các ô với vị trí đích
     public int heuristic3(State goalState) {
         int[] goalValue = goalState.value;
         int distance = 0;
@@ -133,7 +134,7 @@ public class State {
         }
         return distance;
     }
-    // Tổng số ô sai hàng và số ô sai cột
+    // Heuristic 4 - Tổng số ô sai hàng và số ô sai cột
     public int heuristic4(State goalState) {
         int[] goalValue = goalState.value;
         int distance = 0;
@@ -146,7 +147,7 @@ public class State {
         }
         return distance;
     }
-    // Tổng khoảng cách để đưa các ô về đúng vị trí + số ô xung đột tuyến tính
+    // Heuristic 5 - Tổng khoảng cách để đưa các ô về đúng vị trí + số ô xung đột tuyến tính
     public int heuristic5(State goalState) {
         int[] goalValue = goalState.value;
         int distance = 0;
@@ -173,6 +174,40 @@ public class State {
                     if (c > max) max = c;
                     else distance += 2;
                 }
+            }
+        }
+        return distance;
+    }
+    //Heuristic 6 - Heuristic 5 + Số ô không thể về đích
+    public int heuristic6(State goalState) {
+        int[] goalValue = goalState.value;
+        int distance = 0;
+        distance += heuristic5(goalState);
+        for (int i = 0; i < length; i++) {
+            if (value[i] != 0) {
+                int c = value[i];
+                int gi = Arrays.binarySearch(goalValue, c);
+                int block = 0; // Số ô vuông đúng vị trí xung quanh
+                int count = 0; // Số ô vuông xung quanh
+                if (i != gi) {
+                    if (gi / size != 0) {
+                        count++;
+                        block += value[gi - size] == goalValue[gi - size] ? 1 : 0;
+                    }
+                    if (gi / size != size - 1) {
+                        count++;
+                        block += value[gi + size] == goalValue[gi + size] ? 1 : 0;
+                    }
+                    if (gi  % size != 0) {
+                        count++;
+                        block += value[gi - 1] == goalValue[gi - 1] ? 1 : 0;
+                    }
+                    if (gi % size != size - 1) {
+                        count++;
+                        block += value[gi + 1] == goalValue[gi + 1] ? 1 : 0;
+                    }
+                }
+                if (count >= 2 && count == block) distance++;
             }
         }
         return distance;

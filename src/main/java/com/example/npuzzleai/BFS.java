@@ -30,7 +30,7 @@ public class BFS {
         try {
             while (!FRINGE.isEmpty()) {
                 currentNode = FRINGE.poll();
-                if (System.currentTimeMillis() - startTime > 120000) {
+                if (System.currentTimeMillis() - startTime > 60000) {
                     error = "Thuật toán quá tốn thời gian!";
                     FRINGE.clear();
                     return;

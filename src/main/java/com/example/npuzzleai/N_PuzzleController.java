@@ -157,6 +157,10 @@ public class N_PuzzleController implements Initializable, Runnable {
                 State.heuristic = 5;
                 algorithm = "A*";
             }
+            case "heuristic6" -> {
+                State.heuristic = 6;
+                algorithm = "A*";
+            }
             default -> algorithm = "BFS";
         }
         algorithmMenu.setText(selectedAlgorithm.getText());
@@ -248,8 +252,7 @@ public class N_PuzzleController implements Initializable, Runnable {
                 case A -> state.LEFT();
                 case S -> state.DOWN();
                 case D -> state.RIGHT();
-                default -> countStep--;
-            }
+                default -> value = tmpValue;            }
             if (Arrays.equals(tmpValue, value)) {
                 countStep--;
             }
@@ -342,7 +345,7 @@ public class N_PuzzleController implements Initializable, Runnable {
             if (!Arrays.equals(value, goalState.value)) {
                 Platform.runLater(this::solving);
                 // Giải bài toán bằng lần lượt các Heuristic
-                for (int i = 1; i <= 5; i++) {
+                for (int i = 1; i <= 6; i++) {
                     State.heuristic = i;
                     solveAStar();
                     Result result = new Result("H" + i, approvedNodes, totalNodes, solveTime, error);

@@ -46,6 +46,7 @@
             <RadioMenuItem fx:id="heuristic3" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H3" toggleGroup="$algorithmToggle" />
             <RadioMenuItem fx:id="heuristic4" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H4" toggleGroup="$algorithmToggle" />
             <RadioMenuItem fx:id="heuristic5" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H5" toggleGroup="$algorithmToggle" />
+            <RadioMenuItem fx:id="heuristic6" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H6" toggleGroup="$algorithmToggle" />
          </items>
       </SplitMenuButton>
       <Label layoutX="68.0" layoutY="437.0" text="Thuật toán" />

@@ -32,7 +32,7 @@ public class AStar {
         FRINGE.add(startNode);
         while (!FRINGE.isEmpty()) {
             // Điều kiện dừng thuật toán
-            if (System.currentTimeMillis() - startTime > 180000) {
+            if (System.currentTimeMillis() - startTime > 60000) {
                 error = "Thuật toán quá tốn thời gian!";
                 approvedNodes = Integer.MAX_VALUE;
                 FRINGE.clear();
