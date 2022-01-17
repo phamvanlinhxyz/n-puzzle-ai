@@ -45,6 +45,8 @@ public class N_PuzzleController implements Initializable, Runnable {
     @FXML
     private Button solveBtn;
     @FXML
+    private Button playBtn;
+    @FXML
     private Button jumbleBtn;
     @FXML
     private Button addImage;
@@ -77,9 +79,11 @@ public class N_PuzzleController implements Initializable, Runnable {
     private String algorithm;
     private int countStep = 0;
     private boolean isSolve = false;
+    private boolean isPlay = false;
     private int approvedNodes;
     private int totalNodes;
     private long solveTime;
+    private long startTime;
     private String error;
     private final Vector<Result> compareResults = new Vector<>();
 
@@ -109,7 +113,7 @@ public class N_PuzzleController implements Initializable, Runnable {
             String step = i + "/" + totalStep;
             Platform.runLater(() -> stepField.setText(step));
             try {
-                Thread.sleep(500);
+                Thread.sleep(600);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -242,9 +246,19 @@ public class N_PuzzleController implements Initializable, Runnable {
         AStar.stop = false;
         compareThread().start();
     }
+    // Button chơi
+    public void onPlayBtnClick() {
+        if (!isPlay) {
+            playing();
+            startTime = System.currentTimeMillis();
+        } else {
+            countStep = 0;
+            notPlay();
+        }
+    }
     // Sự kiện từ bàn phím
     public void onKeyPressed(KeyEvent ke) {
-        if (!isSolve) {
+        if (isPlay) {
             countStep++;
             int[] tmpValue = Arrays.copyOf(value, size * size);
             switch (ke.getCode()) {
@@ -257,7 +271,10 @@ public class N_PuzzleController implements Initializable, Runnable {
                 countStep--;
             }
             if (Arrays.equals(value, goalState.value)) {
-                countStep = 0;
+                if (countStep != 0) {
+                    showResult();
+                    countStep = 0;
+                }
             }
             stepField.setText(String.valueOf(countStep));
             displayImage(image);
@@ -265,7 +282,7 @@ public class N_PuzzleController implements Initializable, Runnable {
     }
     // Sự kiện click chuột
     public void onMouseClicked(MouseEvent me) {
-        if (!isSolve) {
+        if (isPlay) {
             int blank = state.posBlank(state.value);
             int x = blank % size;
             int y = blank / size;
@@ -284,7 +301,10 @@ public class N_PuzzleController implements Initializable, Runnable {
                 countStep--;
             }
             if (Arrays.equals(value, goalState.value)) {
-                countStep = 0;
+                if (countStep != 0) {
+                    showResult();
+                    countStep = 0;
+                }
             }
             stepField.setText(String.valueOf(countStep));
             displayImage(image);
@@ -365,20 +385,32 @@ public class N_PuzzleController implements Initializable, Runnable {
     public void solving() {
         isSolve = true;
         solveBtn.setText("Dừng");
-        jumbleBtn.setDisable(true);
-        addImage.setDisable(true);
-        addNumber.setDisable(true);
-        compareBtn.setDisable(true);
-        sizeMenu.setDisable(true);
-        algorithmMenu.setDisable(true);
-        progressBar.setVisible(true);
-        goal1.setDisable(true);
-        goal2.setDisable(true);
+        playBtn.setDisable(true);
+        setDisable();
     }
     // Trạng thái không tìm kiếm
     public void notSolve() {
         isSolve = false;
-        solveBtn.setText("Giải");
+        solveBtn.setText("AI Giải");
+        playBtn.setDisable(false);
+        setEnable();
+    }
+    // Trạng thái người chơi
+    public void playing() {
+        isPlay = true;
+        playBtn.setText("Dừng");
+        solveBtn.setDisable(true);
+        setDisable();
+    }
+    // Trạng thái không chơi
+    public void notPlay() {
+        isPlay = false;
+        playBtn.setText("Chơi");
+        solveBtn.setDisable(false);
+        setEnable();
+    }
+    // Enable các nút
+    private void setEnable() {
         solveBtn.setDisable(false);
         jumbleBtn.setDisable(false);
         addImage.setDisable(false);
@@ -389,6 +421,18 @@ public class N_PuzzleController implements Initializable, Runnable {
         progressBar.setVisible(false);
         goal1.setDisable(false);
         goal2.setDisable(false);
+    }
+    // Disable các nút
+    private void setDisable() {
+        jumbleBtn.setDisable(true);
+        addImage.setDisable(true);
+        addNumber.setDisable(true);
+        compareBtn.setDisable(true);
+        sizeMenu.setDisable(true);
+        algorithmMenu.setDisable(true);
+        progressBar.setVisible(true);
+        goal1.setDisable(true);
+        goal2.setDisable(true);
     }
     // Bảng thông báo không tìm được lời giải
     public void showWarning() {
@@ -487,6 +531,21 @@ public class N_PuzzleController implements Initializable, Runnable {
         });
         // Clear vector kết quả
         compareResults.clear();
+    }
+    // Show kết quả người chơi
+    public void showResult() {
+        long time = (System.currentTimeMillis() - startTime) / 1000;
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Thông báo");
+        alert.setHeaderText("Bạn đã hoàn thành trò chơi!");
+        alert.setContentText("Số bước giải: " + countStep + "\n"
+            + "Thời gian giải: " + (time >= 60 ? time / 60 + ":" + time % 60 : time) + "s"
+        );
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(Objects.requireNonNull(N_PuzzleApplication.class.getResourceAsStream("img/logo.png"))));
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+        alert.showAndWait().ifPresent(res -> notPlay());
     }
     // Thêm icon và style cho bảng lời giải và bảng so sánh
     public void alertStyle(Alert alert, ButtonType closeTypeBtn) {

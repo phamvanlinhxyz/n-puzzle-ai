@@ -19,10 +19,12 @@
    <Pane prefHeight="640.0" prefWidth="280.0">
       <ImageView fx:id="imgView" fitHeight="200.0" fitWidth="200.0" layoutX="40.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" />
       <Button fx:id="jumbleBtn" layoutX="40.0" layoutY="330.0" mnemonicParsing="false" onAction="#onJumbleBtnClick" prefHeight="32.0" prefWidth="84.0" text="Trộn" />
-      <Button fx:id="solveBtn" layoutX="156.0" layoutY="330.0" mnemonicParsing="false" onAction="#onSolveBtnClick" prefHeight="32.0" prefWidth="84.0" text="Giải" />
+      <Button fx:id="solveBtn" layoutX="40.0" layoutY="380.0" mnemonicParsing="false" onAction="#onSolveBtnClick" prefHeight="32.0" prefWidth="84.0" text="AI Giải" />
       <Button fx:id="addImage" layoutX="40.0" layoutY="280.0" mnemonicParsing="false" onAction="#onAddImgBtnClick" prefHeight="32.0" prefWidth="84.0" text="Thêm ảnh" />
       <Button fx:id="addNumber" layoutX="156.0" layoutY="280.0" mnemonicParsing="false" onAction="#onAddNumberBtnClick" prefHeight="32.0" prefWidth="84.0" text="Bảng số" />
-      <SplitMenuButton fx:id="sizeMenu" layoutX="156.0" layoutY="380.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="84.0" text="Dễ">
+      <Button fx:id="compareBtn" layoutX="156.0" layoutY="380.0" mnemonicParsing="false" onAction="#onCompareBtnClick" prefHeight="32.0" prefWidth="84.0" text="SS heuristic" />
+      <Button fx:id="playBtn" layoutX="156.0" layoutY="330.0" mnemonicParsing="false" onAction="#onPlayBtnClick" prefHeight="32.0" prefWidth="84.0" text="Chơi" />
+      <SplitMenuButton fx:id="sizeMenu" layoutX="158.0" layoutY="434.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="84.0" text="Dễ">
          <items>
             <RadioMenuItem fx:id="easy" mnemonicParsing="false" onAction="#onChangeImageSize" selected="true" text="Dễ">
                <toggleGroup>
@@ -33,8 +35,8 @@
             <RadioMenuItem fx:id="hard" mnemonicParsing="false" onAction="#onChangeImageSize" text="Khó" toggleGroup="$difficultyToggle" />
          </items>
       </SplitMenuButton>
-      <Label layoutX="85.0" layoutY="387.0" text="Độ khó" />
-      <SplitMenuButton fx:id="algorithmMenu" layoutX="156.0" layoutY="430.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="84.0" text="A* H1">
+      <Label layoutX="87.0" layoutY="441.0" text="Độ khó" />
+      <SplitMenuButton fx:id="algorithmMenu" layoutX="158.0" layoutY="484.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="84.0" text="A* H1">
          <items>
             <RadioMenuItem fx:id="bfs" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="BFS">
                <toggleGroup>
@@ -49,12 +51,11 @@
             <RadioMenuItem fx:id="heuristic6" mnemonicParsing="false" onAction="#onChangeAlgorithm" text="A* H6" toggleGroup="$algorithmToggle" />
          </items>
       </SplitMenuButton>
-      <Label layoutX="68.0" layoutY="437.0" text="Thuật toán" />
-      <Label layoutX="97.0" layoutY="487.0" text="Bước" />
-      <TextField fx:id="stepField" alignment="CENTER" cacheShape="false" centerShape="false" editable="false" focusTraversable="false" layoutX="156.0" layoutY="480.0" pickOnBounds="false" prefHeight="30.0" prefWidth="84.0" scaleShape="false" text="0" />
+      <Label layoutX="70.0" layoutY="491.0" text="Thuật toán" />
+      <Label layoutX="99.0" layoutY="541.0" text="Bước" />
+      <TextField fx:id="stepField" alignment="CENTER" cacheShape="false" centerShape="false" editable="false" focusTraversable="false" layoutX="158.0" layoutY="534.0" pickOnBounds="false" prefHeight="30.0" prefWidth="84.0" scaleShape="false" text="0" />
       <ProgressBar fx:id="progressBar" layoutX="57.0" layoutY="595.0" prefHeight="20.0" prefWidth="165.0" />
       <Separator layoutX="280.0" orientation="VERTICAL" prefHeight="640.0" />
-      <Button fx:id="compareBtn" layoutX="86.0" layoutY="538.0" mnemonicParsing="false" onAction="#onCompareBtnClick" prefHeight="32.0" text="So sánh Heuristic" />
    </Pane>
    <Pane layoutX="280.0" prefHeight="640.0" prefWidth="560.0">
       <AnchorPane fx:id="displayPane" layoutX="55.0" layoutY="20.0" prefHeight="450.0" prefWidth="450.0">

@@ -44,7 +44,7 @@ public class State {
     public int[] createRandomArray() {
         Init();
         Random rand = new Random();
-        int t = 30 * size;
+        int t = 20 * size;
         int count = 0;
         int a = 1, b;
         do {
