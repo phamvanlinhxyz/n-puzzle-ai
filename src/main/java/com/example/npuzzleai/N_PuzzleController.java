@@ -368,8 +368,8 @@ public class N_PuzzleController implements Initializable, Runnable {
                 for (int i = 1; i <= 6; i++) {
                     State.heuristic = i;
                     solveAStar();
-                    Result result = new Result("H" + i, approvedNodes, totalNodes, solveTime, error);
-                    compareResults.add(result); // Lưu kết quả
+                    Result result1 = new Result("H" + i, approvedNodes, totalNodes, result.size() - 1,solveTime, error);
+                    compareResults.add(result1); // Lưu kết quả
                 }
                 // Nếu dừng so sánh
                 if (AStar.stop) {
